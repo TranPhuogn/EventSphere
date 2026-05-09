@@ -7,7 +7,14 @@ import { initStore } from './stores/eventStore'
 const app = createApp(App)
 app.use(router)
 
-// Hydrate the event store from the service layer, then mount
-initStore().then(() => {
-  app.mount('#app')
-})
+// Hydrate the event store from the service layer, then mount.
+// Mounting must not be blocked by init failures (avoid blank screen).
+;(async () => {
+  try {
+    await initStore()
+  } catch (err) {
+    console.error('[EventSphere] initStore failed, mounting anyway:', err)
+  } finally {
+    app.mount('#app')
+  }
+})()

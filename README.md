@@ -1,5 +1,37 @@
-# Vue 3 + Vite
+# 🌌 EventSphere — Premium Ticketing Template
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+EventSphere is a high-end, production-ready frontend template for event discovery and ticketing. 
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## 🚀 Quick Start (Frontend-First)
+
+The project is currently configured as a **Frontend-first template**. All data is powered by a robust Mock Service layer, allowing you to develop and test the full user journey without a backend.
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+## 🏗️ Architecture
+
+- **Frontend:** Vue 3 + Vite + Tailwind CSS 4
+- **State Management:** Reactive Store in `src/stores/`
+- **Data Source:** Mock Data in `src/mocks/`
+- **Design System:** Emerald Obsidian (Semantic tokens in `src/assets/main.css`)
+
+## 📂 Repository Structure
+
+- `src/` — Main frontend application code.
+- `design-system/` — Visual guidelines and design tokens.
+- `public/` — Static assets and favicon.
+
+## 🧹 Codebase Maintenance
+
+- All legacy/scaffold files (`vite.svg`, `style.css`, etc.) have been removed.
+- Use `npm run dev` for local development.
+- Build artifacts (`dist`, `bin`, `obj`) are automatically ignored.
+
+---
+*Built with ❤️ by Antigravity.*

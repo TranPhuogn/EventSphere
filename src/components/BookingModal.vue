@@ -50,39 +50,57 @@
           </div>
         </div>
 
-        <!-- STEP 1: Select Tickets -->
+        <!-- STEP 1: Select Tickets / Seats -->
         <div v-if="step === 1" class="px-8 pb-8 flex flex-col gap-4">
-          <div 
-            v-for="tier in availableTiers" 
-            :key="tier.name" 
-            class="flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all hover:bg-card"
-            :class="[
-              selectedTier === tier 
-                ? 'bg-primary/10 border-primary shadow-lg shadow-primary/10' 
-                : 'bg-card/50 border-border-main hover:border-primary/50'
-            ]"
-            @click="selectedTier = tier"
-          >
-            <div class="flex flex-col gap-1">
-              <div class="font-bold" :class="selectedTier === tier ? 'text-primary' : 'text-main'">{{ tier.name }}</div>
-              <div class="font-heading text-lg font-bold" :class="selectedTier === tier ? 'text-primary' : 'text-primary/70'">{{ formatPrice(tier.price) }}</div>
+          
+          <!-- Seat Map Mode -->
+          <template v-if="event.hasSeatMap">
+            <div class="bg-card/50 border border-border-main rounded-2xl p-6">
+              <SeatMap :seatMap="event.seatMap" v-model="selectedSeats" />
             </div>
-            
-            <!-- Quantity Control (only when selected) -->
-            <div v-if="selectedTier === tier" class="flex items-center gap-3 bg-surface p-1 px-2 rounded-lg border border-border-main" @click.stop>
-              <button 
-                class="w-7 h-7 rounded bg-card flex items-center justify-center text-main hover:text-primary transition-colors disabled:opacity-30" 
-                @click="qty > 1 ? qty-- : null"
-                :disabled="qty <= 1"
-              >−</button>
-              <div class="w-6 text-center font-bold text-main">{{ qty }}</div>
-              <button 
-                class="w-7 h-7 rounded bg-card flex items-center justify-center text-main hover:text-primary transition-colors disabled:opacity-30" 
-                @click="qty < 10 ? qty++ : null"
-                :disabled="qty >= 10"
-              >+</button>
+            <!-- Selected Seats Summary -->
+            <div v-if="selectedSeats.length > 0" class="flex flex-wrap gap-2 mt-2">
+              <span class="text-[12px] text-muted font-bold uppercase mr-2 flex items-center">Ghế đã chọn:</span>
+              <div v-for="seat in selectedSeats" :key="seat.id" class="px-2 py-1 rounded bg-primary/20 text-primary border border-primary/30 text-[12px] font-bold">
+                {{ seat.id }} ({{ seat.tierName }})
+              </div>
             </div>
-          </div>
+          </template>
+
+          <!-- Standard Tier Selection Mode -->
+          <template v-else>
+            <div 
+              v-for="tier in availableTiers" 
+              :key="tier.name" 
+              class="flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all hover:bg-card"
+              :class="[
+                selectedTier === tier 
+                  ? 'bg-primary/10 border-primary shadow-lg shadow-primary/10' 
+                  : 'bg-card/50 border-border-main hover:border-primary/50'
+              ]"
+              @click="selectedTier = tier"
+            >
+              <div class="flex flex-col gap-1">
+                <div class="font-bold" :class="selectedTier === tier ? 'text-primary' : 'text-main'">{{ tier.name }}</div>
+                <div class="font-heading text-lg font-bold" :class="selectedTier === tier ? 'text-primary' : 'text-primary/70'">{{ formatPrice(tier.price) }}</div>
+              </div>
+              
+              <!-- Quantity Control (only when selected) -->
+              <div v-if="selectedTier === tier" class="flex items-center gap-3 bg-surface p-1 px-2 rounded-lg border border-border-main" @click.stop>
+                <button 
+                  class="w-7 h-7 rounded bg-card flex items-center justify-center text-main hover:text-primary transition-colors disabled:opacity-30" 
+                  @click="qty > 1 ? qty-- : null"
+                  :disabled="qty <= 1"
+                >−</button>
+                <div class="w-6 text-center font-bold text-main">{{ qty }}</div>
+                <button 
+                  class="w-7 h-7 rounded bg-card flex items-center justify-center text-main hover:text-primary transition-colors disabled:opacity-30" 
+                  @click="qty < 10 ? qty++ : null"
+                  :disabled="qty >= 10"
+                >+</button>
+              </div>
+            </div>
+          </template>
         </div>
 
         <!-- STEP 2: User Info -->
@@ -109,8 +127,8 @@
           <!-- Order Summary Small -->
           <div class="bg-card/50 border border-border-main rounded-2xl p-5 flex flex-col gap-3">
             <div class="flex justify-between text-[14px]">
-              <span class="text-muted">Loại vé: <span class="text-main font-bold">{{ selectedTier?.name }}</span></span>
-              <span class="text-muted">Số lượng: <span class="text-main font-bold">x{{ qty }}</span></span>
+              <span class="text-muted">Loại vé: <span class="text-main font-bold">{{ event.hasSeatMap ? (selectedSeats.length ? 'Ghế ngồi' : '') : selectedTier?.name }}</span></span>
+              <span class="text-muted">Số lượng: <span class="text-main font-bold">x{{ event.hasSeatMap ? selectedSeats.length : qty }}</span></span>
             </div>
             <div class="h-[1px] bg-border-main"></div>
             <div class="flex justify-between items-center">
@@ -168,8 +186,8 @@
               <div class="font-mono text-lg font-bold text-main mb-1 tracking-widest">{{ generatedCode }}</div>
               <div class="text-[13px] text-muted font-bold truncate px-4">{{ event.title }}</div>
               <div class="mt-4 pt-4 border-t border-border-main flex justify-between text-[11px] font-bold uppercase tracking-wider text-muted">
-                <span>{{ selectedTier?.name }}</span>
-                <span>Số lượng: {{ qty }}</span>
+                <span>{{ event.hasSeatMap ? 'Ghế: ' + selectedSeats.map(s => s.id).join(', ') : selectedTier?.name }}</span>
+                <span>Số lượng: {{ event.hasSeatMap ? selectedSeats.length : qty }}</span>
               </div>
             </div>
           </div>
@@ -197,7 +215,7 @@
           variant="primary" 
           size="lg" 
           class="!px-10 !rounded-2xl"
-          :disabled="!selectedTier" 
+          :disabled="event.hasSeatMap ? selectedSeats.length === 0 : !selectedTier" 
           @click="step = 2"
         >
           Tiếp tục →
@@ -237,6 +255,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import BaseButton from './ui/BaseButton.vue'
+import SeatMap from './SeatMap.vue'
 
 const props = defineProps({ event: Object })
 const emit = defineEmits(['close', 'success'])
@@ -244,6 +263,7 @@ const emit = defineEmits(['close', 'success'])
 const step = ref(1)
 const selectedTier = ref(null)
 const qty = ref(1)
+const selectedSeats = ref([])
 const isProcessing = ref(false)
 const isSuccess = ref(false)
 const generatedCode = ref('')
@@ -283,6 +303,12 @@ const availableTiers = computed(() => {
 })
 
 const totalPrice = computed(() => {
+  if (props.event?.hasSeatMap) {
+    return selectedSeats.value.reduce((total, seat) => {
+      const tier = availableTiers.value.find(t => t.name === seat.tierName)
+      return total + (tier ? tier.price : 0)
+    }, 0)
+  }
   return selectedTier.value ? selectedTier.value.price * qty.value : 0
 })
 
@@ -306,8 +332,11 @@ const finishBooking = () => {
   emit('success', {
     id: Date.now().toString(),
     event: props.event,
-    tier: selectedTier.value?.name || 'Standard',
-    qty: qty.value,
+    tier: props.event?.hasSeatMap 
+      ? Array.from(new Set(selectedSeats.value.map(s => s.tierName))).join(', ') 
+      : (selectedTier.value?.name || 'Standard'),
+    qty: props.event?.hasSeatMap ? selectedSeats.value.length : qty.value,
+    seats: props.event?.hasSeatMap ? selectedSeats.value : [],
     total: totalPrice.value,
     code: generatedCode.value,
     date: new Date().toISOString()

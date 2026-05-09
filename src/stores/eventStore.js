@@ -1,10 +1,11 @@
 import { reactive, ref } from 'vue'
 import {
   fetchEvents,
-  fetchEventById,
   createEvent,
   patchEvent,
-  removeEvent
+  removeEvent,
+  fetchStars,
+  fetchDestinations
 } from '../services/eventService'
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -50,10 +51,6 @@ export function getEvents() {
 
 export function getEventById(id) {
   return store.events.find(e => e.id === id) || null
-}
-
-export function getEventBySlug(slug) {
-  return store.events.find(e => e.slug === slug) || null
 }
 
 // ─── ASYNC CRUD (through service) ────────────────────────────────────────────
@@ -181,3 +178,5 @@ export function logout() {
   store.user = null
   store.toast = { message: 'Đã đăng xuất', icon: '🚪' }
 }
+
+export { fetchStars, fetchDestinations }

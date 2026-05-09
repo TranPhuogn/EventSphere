@@ -58,6 +58,8 @@ function mapLegacy(event, category) {
     image: event.image,
     featured: event.featured || false,
     status: computeStatus(parsedDate),
+    hasSeatMap: event.hasSeatMap || false,
+    seatMap: event.seatMap || null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   }
@@ -66,7 +68,14 @@ function mapLegacy(event, category) {
 // ─── RAW LEGACY DATA ─────────────────────────────────────────────────────────
 const RAW = {
   concerts: [
-    { id: "c1", title: "SƠNТÙNG M-TP LIVE CONCERT 2025", artist: "Sơn Tùng M-TP", date: "Sat, 15 Mar 2025", time: "19:30", location: "Mỹ Đình National Stadium, Hà Nội", city: "hanoi", price: "800,000đ", tiers: [{name: 'GA', price: 800000}, {name: 'VIP', price: 1500000}, {name: 'VVIP', price: 3000000}], genre: "Pop", image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=600&q=80", featured: true },
+    { id: "c1", title: "SƠN TÙNG M-TP LIVE CONCERT 2099", artist: "Sơn Tùng M-TP", date: "Mon, 15 Mar 2099", time: "19:30", location: "Mỹ Đình National Stadium, Hà Nội", city: "hanoi", price: "800,000đ", tiers: [{name: 'GA', price: 800000}, {name: 'VIP', price: 1500000}, {name: 'VVIP', price: 3000000}], genre: "Pop", image: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=600&q=80", featured: true, hasSeatMap: true, seatMap: {
+      rows: [
+        { id: 'A', tier: 'VVIP', seats: [{ id: 'A1', status: 'available' }, { id: 'A2', status: 'sold' }, { id: 'A3', status: 'sold' }, { id: 'A4', status: 'available' }, { id: 'A5', status: 'available' }] },
+        { id: 'B', tier: 'VIP', seats: [{ id: 'B1', status: 'available' }, { id: 'B2', status: 'reserved' }, { id: 'B3', status: 'available' }, { id: 'B4', status: 'available' }, { id: 'B5', status: 'available' }] },
+        { id: 'C', tier: 'GA', seats: [{ id: 'C1', status: 'available' }, { id: 'C2', status: 'available' }, { id: 'C3', status: 'available' }, { id: 'C4', status: 'available' }, { id: 'C5', status: 'available' }, { id: 'C6', status: 'available' }] },
+        { id: 'D', tier: 'GA', seats: [{ id: 'D1', status: 'available' }, { id: 'D2', status: 'sold' }, { id: 'D3', status: 'sold' }, { id: 'D4', status: 'available' }, { id: 'D5', status: 'available' }, { id: 'D6', status: 'available' }] }
+      ]
+    } },
     { id: "c2", title: "EDM STORM FESTIVAL", artist: "DJ Snake & Friends", date: "Sun, 22 Mar 2025", time: "20:00", location: "Landmark 81, Hồ Chí Minh", city: "hcm", price: "1,200,000đ", tiers: [{name: 'General', price: 1200000}, {name: 'VIP', price: 2500000}], genre: "EDM", image: "https://images.unsplash.com/photo-1574169208507-84376144848b?w=600&q=80", featured: true },
     { id: "c3", title: "INDIE NIGHTS VOL. 7", artist: "Various Artists", date: "Fri, 28 Mar 2025", time: "18:00", location: "Hanoi Rock City", city: "hanoi", price: "250,000đ", tiers: [{name: 'General', price: 250000}], genre: "Rock", image: "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80", featured: false },
     { id: "c4", title: "MỸ TÂM ACOUSTIC NIGHT", artist: "Mỹ Tâm", date: "Sat, 5 Apr 2025", time: "20:00", location: "Grand Palace, Đà Nẵng", city: "danang", price: "600,000đ", tiers: [{name: 'Standard', price: 600000}, {name: 'VIP', price: 1200000}], genre: "Pop", image: "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600&q=80", featured: false },

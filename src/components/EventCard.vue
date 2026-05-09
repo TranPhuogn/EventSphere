@@ -1,63 +1,85 @@
 <template>
   <div 
-    class="group relative flex flex-col bg-card border border-border-main rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:border-primary hover:shadow-[0_16px_48px_rgba(0,200,83,0.15),0_4px_16px_rgba(0,0,0,0.3)]"
+    class="group relative flex flex-col bg-[#111916] border border-white/5 rounded-[20px] overflow-hidden cursor-pointer transition-all duration-500 hover:-translate-y-2 hover:border-primary/50 hover:shadow-[0_20px_40px_-15px_rgba(0,200,83,0.2)]"
     @click="goToEvent"
   >
     <!-- Poster Image Wrapper -->
-    <div class="relative w-full aspect-[3/4] overflow-hidden">
+    <div class="relative w-full aspect-[4/5] overflow-hidden bg-[#0A0F0D]">
       <img 
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+        class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 group-hover:opacity-80" 
         :src="event.image" 
         :alt="event.title" 
         loading="lazy" 
       />
       
       <!-- Gradient overlay -->
-      <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent pointer-events-none"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-[#111916] via-transparent to-transparent opacity-90"></div>
+
+      <!-- Hover Reveal: View Details -->
+      <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20 pointer-events-none">
+        <span class="px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white font-medium shadow-xl translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+          Xem chi tiết
+        </span>
+      </div>
 
       <!-- Wishlist -->
       <button 
-        class="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full bg-black/50 backdrop-blur-md border border-white/15 text-lg transition-all duration-200 hover:scale-110 hover:bg-black/70 z-10"
+        class="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-xl transition-all duration-300 hover:scale-110 hover:bg-black/60 z-30"
         @click.stop="toggleWishlist(event.id)"
       >
         {{ isWishlisted ? '❤️' : '🤍' }}
       </button>
 
-      <!-- Status / Featured badges -->
-      <div v-if="event.featured" class="absolute top-3 left-3 px-3 py-1 rounded-lg bg-danger/90 backdrop-blur-md text-white text-[11px] font-bold tracking-wider uppercase z-10">
-        🔥 HOT
-      </div>
-      <div v-else-if="event.status === 'ended'" class="absolute top-3 left-3 px-3 py-1 rounded-lg bg-black/75 backdrop-blur-md text-muted text-[11px] font-bold tracking-wider uppercase z-10">
-        Đã kết thúc
-      </div>
-      <div v-else-if="event.status === 'sold-out'" class="absolute top-3 left-3 px-3 py-1 rounded-lg bg-danger/85 backdrop-blur-md text-white text-[11px] font-bold tracking-wider uppercase z-10">
-        Hết vé
-      </div>
-      <div v-else-if="event.status === 'upcoming'" class="absolute top-3 left-3 px-3 py-1 rounded-lg bg-primary/20 backdrop-blur-md border border-primary/50 text-primary text-[11px] font-bold tracking-wider uppercase z-10">
-        Sắp diễn ra
+      <!-- Status / Featured badges / Rank -->
+      <div class="absolute top-4 left-4 flex flex-col gap-2 z-20">
+        <!-- Ticketbox-style Rank Badge -->
+        <div v-if="rank" class="w-10 h-10 flex items-center justify-center rounded-lg bg-primary text-black font-black text-xl shadow-[0_0_20px_rgba(0,200,83,0.4)]">
+          {{ rank }}
+        </div>
+        <div v-if="event.featured" class="px-3 py-1.5 rounded-lg bg-danger/90 backdrop-blur-md text-white text-[11px] font-bold tracking-widest uppercase shadow-lg shadow-danger/20">
+          🔥 HOT
+        </div>
+        <div v-else-if="event.status === 'ended'" class="px-3 py-1.5 rounded-lg bg-black/75 backdrop-blur-md text-muted text-[11px] font-bold tracking-widest uppercase border border-white/10">
+          Đã kết thúc
+        </div>
+        <div v-else-if="event.status === 'sold-out'" class="px-3 py-1.5 rounded-lg bg-danger/85 backdrop-blur-md text-white text-[11px] font-bold tracking-widest uppercase border border-danger/50">
+          Hết vé
+        </div>
+        <div v-else-if="event.status === 'upcoming'" class="px-3 py-1.5 rounded-lg bg-primary/20 backdrop-blur-md border border-primary/50 text-primary text-[11px] font-bold tracking-widest uppercase">
+          Sắp diễn ra
+        </div>
       </div>
 
-      <!-- Price overlay -->
-      <div class="absolute bottom-3 left-3 flex items-baseline gap-1.5 z-10">
-        <span class="text-[12px] text-white/70 font-medium">Từ</span>
-        <span class="font-heading text-lg font-bold text-primary drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]">{{ lowestPrice }}</span>
+      <!-- Category Label (Moved to image bottom) -->
+      <div class="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end">
+        <div class="text-[11px] font-bold text-primary uppercase tracking-widest bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/5">
+          {{ categoryLabel }}
+        </div>
+        <!-- Price overlay -->
+        <div class="flex items-baseline gap-1.5 px-3 py-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/5">
+          <span class="text-[11px] text-white/70 font-medium">Từ</span>
+          <span class="font-heading text-sm font-bold text-primary">{{ lowestPrice }}</span>
+        </div>
       </div>
     </div>
 
     <!-- Body -->
-    <div class="flex flex-col gap-1 p-4 pb-4.5 flex-1">
-      <div class="text-[11px] font-bold text-primary uppercase tracking-wider">
-        {{ categoryLabel }}
-        <span v-if="primaryPerformer" class="text-muted font-medium lowercase first-letter:uppercase"> · {{ primaryPerformer }}</span>
-      </div>
-      <div class="font-heading text-[15px] font-bold text-main line-clamp-2 leading-snug my-0.5">
+    <div class="flex flex-col gap-2 p-5 flex-1 relative z-10 bg-[#111916]">
+      <div class="font-heading text-lg font-bold text-white line-clamp-2 leading-snug group-hover:text-primary transition-colors duration-300">
         {{ event.title }}
       </div>
-      <div class="flex items-center gap-1.5 text-[12px] text-muted">
-        <span>📅</span> {{ formatDate(event.dateStart) }}
+      
+      <div v-if="primaryPerformer" class="text-[13px] text-muted font-medium mb-1">
+        Với sự tham gia của <span class="text-white/80">{{ primaryPerformer }}</span>
       </div>
-      <div class="flex items-center gap-1.5 text-[12px] text-muted">
-        <span>📍</span> {{ event.location?.name || '' }}
+
+      <div class="mt-auto pt-3 border-t border-white/5 flex items-center justify-between text-[13px] text-muted font-medium">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">📅</span> {{ formatDate(event.dateStart) }}
+        </div>
+        <div class="flex items-center gap-2 max-w-[50%] truncate">
+          <span class="text-lg">📍</span> <span class="truncate">{{ event.location?.name || 'Đang cập nhật' }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -68,7 +90,10 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { selectEvent, store, toggleWishlist as storeToggleWishlist } from '../stores/eventStore'
 
-const props = defineProps({ event: { type: Object, required: true } })
+const props = defineProps({ 
+  event: { type: Object, required: true },
+  rank: { type: Number, default: null }
+})
 const router = useRouter()
 
 const isWishlisted = computed(() => store.wishlist.includes(props.event.id))

@@ -1,97 +1,72 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <!-- Overlay -->
-    <div 
-      class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" 
-      @click="closeOnOutsideClick && $emit('close')"
-    ></div>
-
-    <!-- Modal Panel -->
-    <div 
-      class="relative bg-surface border border-border-main rounded-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-8 transform transition-all duration-300"
-      :class="maxWidthClass"
+  <Teleport to="body">
+    <Transition
+      enter-active-class="transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
+      enter-from-class="opacity-0 scale-95 backdrop-blur-0"
+      enter-to-class="opacity-100 scale-100 backdrop-blur-xl"
+      leave-active-class="transition-all duration-300 ease-in"
+      leave-from-class="opacity-100 scale-100 backdrop-blur-xl"
+      leave-to-class="opacity-0 scale-95 backdrop-blur-0"
     >
-      <!-- Header -->
-      <div class="flex items-start justify-between mb-6">
-        <div>
-          <h2 v-if="title" class="font-heading text-2xl font-bold text-white mb-1">{{ title }}</h2>
-          <p v-if="subtitle" class="text-sm text-muted">{{ subtitle }}</p>
-        </div>
-        
-        <button 
-          @click="$emit('close')"
-          class="text-muted hover:text-white transition-colors rounded-full p-1 hover:bg-card"
+      <div v-if="show" class="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6" @mousedown.self="$emit('close')">
+        <!-- Backdrop Backdrop -->
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+        <!-- Modal Content -->
+        <div 
+          class="relative w-full overflow-hidden bg-card border border-border-main rounded-[3rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] flex flex-col"
+          :class="[maxWidthClass]"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
+          <!-- Header -->
+          <div class="flex items-center justify-between p-6 px-10 border-b border-border-main bg-card/50">
+            <div class="flex flex-col">
+              <h2 class="text-2xl font-bold font-heading text-main leading-tight">{{ title }}</h2>
+              <p v-if="subtitle" class="text-[13px] font-medium text-muted mt-0.5">{{ subtitle }}</p>
+            </div>
+            <button 
+              @click="$emit('close')"
+              class="w-10 h-10 rounded-full flex items-center justify-center bg-surface border border-border-main text-muted hover:text-main hover:border-primary transition-all group"
+            >
+              <span class="text-xl group-active:scale-90 transition-transform">✕</span>
+            </button>
+          </div>
 
-      <!-- Content slot -->
-      <div class="mt-2">
-        <slot></slot>
-      </div>
+          <!-- Body -->
+          <div class="flex-1 overflow-y-auto max-h-[80vh] scroll-smooth p-6 px-10">
+            <slot />
+          </div>
 
-      <!-- Footer slot (optional) -->
-      <div v-if="$slots.footer" class="mt-8 pt-6 border-t border-border-main flex justify-end gap-3">
-        <slot name="footer"></slot>
+          <!-- Footer -->
+          <div v-if="$slots.footer" class="p-6 px-10 border-t border-border-main bg-card/30 flex items-center justify-end gap-4">
+            <slot name="footer" />
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
-  show: {
-    type: Boolean,
-    default: false
-  },
-  title: {
+  show: Boolean,
+  title: String,
+  subtitle: String,
+  size: {
     type: String,
-    default: ''
-  },
-  subtitle: {
-    type: String,
-    default: ''
-  },
-  maxWidth: {
-    type: String,
-    default: 'md',
-    validator: (v) => ['sm', 'md', 'lg', 'xl'].includes(v)
-  },
-  closeOnOutsideClick: {
-    type: Boolean,
-    default: true
+    default: 'md' // sm, md, lg, xl
   }
 })
 
-const emit = defineEmits(['close'])
+defineEmits(['close'])
 
 const maxWidthClass = computed(() => {
-  switch (props.maxWidth) {
+  switch (props.size) {
     case 'sm': return 'max-w-md'
-    case 'md': return 'max-w-lg'
-    case 'lg': return 'max-w-2xl'
-    case 'xl': return 'max-w-4xl'
-    default: return 'max-w-lg'
+    case 'lg': return 'max-w-3xl'
+    case 'xl': return 'max-w-5xl'
+    default: return 'max-w-xl'
   }
-})
-
-// Prevent body scroll when modal is open
-watch(() => props.show, (isOpen) => {
-  if (isOpen) {
-    document.body.style.overflow = 'hidden'
-  } else {
-    document.body.style.overflow = ''
-  }
-})
-
-// Cleanup on unmount
-onUnmounted(() => {
-  document.body.style.overflow = ''
 })
 </script>

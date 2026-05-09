@@ -6,6 +6,9 @@ import MyTicketsPage from '../pages/MyTicketsPage.vue'
 import ProfilePage from '../pages/ProfilePage.vue'
 import OrganizerPage from '../pages/OrganizerPage.vue'
 import CreateEventPage from '../pages/CreateEventPage.vue'
+import EarlyBirdPage from '../pages/EarlyBirdPage.vue'
+import StarsPage from '../pages/StarsPage.vue'
+import DestinationsPage from '../pages/DestinationsPage.vue'
 
 // Admin
 import AdminLayout from '../layouts/AdminLayout.vue'
@@ -22,6 +25,9 @@ const routes = [
   { path: '/profile', name: 'profile', component: ProfilePage },
   { path: '/organizer', name: 'organizer', component: OrganizerPage },
   { path: '/create-event', name: 'create-event', component: CreateEventPage },
+  { path: '/early-bird', name: 'early-bird', component: EarlyBirdPage },
+  { path: '/stars', name: 'stars', component: StarsPage },
+  { path: '/destinations', name: 'destinations', component: DestinationsPage },
   
   // Admin Routes
   {
